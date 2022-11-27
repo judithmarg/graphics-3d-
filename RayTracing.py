@@ -11,21 +11,21 @@ def rayTracer(origen, direccion,profundidad,color):
     punto_interseccion = vector3D
     direccion_reflejada = vector3D
     direccion_transparente = vector3D
-    color_local1,color_reflejado,color_transperente = color 
+    color_local,color_reflejado,color_transparente = color 
     if profundidad > 5:
-        color = black
+        color = (0,0,0)
     else:
-        interseccion = intersectarRayo(origen,direccion) #####
+        interseccion = intersectarRayo(origen,direccion)     #####ahora funciona con una esfera
         if interseccion is None:
-            color = black 
+            color = (0,0,0) 
         else:
-            color_local1 = iluminarDirectly() 
-            rayo_reflejado = rayoReflejado() #####
-            punto_interseccion = interseccion[0] ###
-            #direccion_reflejada = interseccion[1] ###
+            color_local = iluminarDirectly(colorFigura) 
+            direccion_reflejada = interseccion[1]           ### direccion donde intersecta con the shape
+            direccion_reflejada = rayoReflejado(direccion_reflejada, direccion)                 #####cambiar a direccion reflejada (?)
+            punto_interseccion = interseccion[0]             ### punto donde intersecta con la figura, cambiar (?)
             rayTracer(punto_interseccion, direccion_reflejada,profundidad+1, color_reflejado) 
-            direccion = rayoTransmite() #####
-            rayTracer(punto_interseccion, direccion_transparente,profundidad+1,color_transperente)
+            direccion_transparente = rayoTransmite(direccion_transparente, direccion_reflejada)         #### direccion a cambiar?
+            rayTracer(punto_interseccion, direccion_transparente,profundidad+1,color_transparente)
             color = combinarContribColor()
     return color
 
@@ -56,3 +56,25 @@ def intersectarRayo(origen,direccion):
         vector[1] = vectorNormal
         return vector 
 
+def iluminarDirectly(colorObjeto):
+    color_amb = (0.5*colorObjeto[0], 0.5*colorObjeto[1], 0.5*colorObjeto[2])
+    return color_amb
+
+def rayoReflejado(normal,vectorObs):
+    productoPunto = 0
+    for i in range (0,len(normal)):
+        productoPunto += normal[i]*vectorObs[i]
+    normalArray = np.array(normal)
+    paralelaNormal = normalArray * (2*productoPunto)
+    paralelaNormal = np.array(paralelaNormal)
+    direccionReflejado =  np.substract(paralelaNormal,vectorObs)
+    return direccionReflejado
+
+def rayoTransmite(normal, vector):
+    n21 = 1
+    normalA = np.array(normal)
+    vectorA = np.array(vector)
+    vectorC = np.cross(normalA, vectorA)# producto cruz en vectores
+    vectorCcuadrado = np.dot(vectorC, vectorC) #producto punto en vector c
+    direccionTransmite = n21*vectorA + (n21*vectorC - np.sqrt(1+(n21**2*(vectorCcuadrado-1))))*normalA
+    return direccionTransmite
