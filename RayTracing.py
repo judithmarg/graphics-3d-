@@ -102,7 +102,7 @@ def prueba():
     cv2.waitKey(0)
 
 def rayTracer(origen, direccion,profundidad,color):
-    ##interseccion con cada figura
+    ##interseccion con cada figura 
     vector3D = np.array(origen) + 3*np.array(direccion)  ##cambiar vector3D a rayo
     punto_interseccion = vector3D
     direccion_reflejada = vector3D
