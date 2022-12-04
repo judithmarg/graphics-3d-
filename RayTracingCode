@@ -8,14 +8,11 @@ def normalize(x):
     x /= np.linalg.norm(x)
     return x
 
-def intersect_plane(O, D, P, rayoDireccion):
-    # Return the distance from O to the intersection of the ray (O, D) with the 
-    # plane (P, rayoDireccion), or +inf if there is no intersection.
-    # O and P are 3D points, D and N (normal) are normalized vectors.
-    denom = np.dot(D, rayoDireccion)
+def intersect_plane(O, D, P, normal):
+    denom = np.dot(D, normal)
     if np.abs(denom) < 1e-6:
         return np.inf
-    d = np.dot(P - O, rayoDireccion) / denom
+    d = np.dot(P - O, normal) / denom
     if d < 0:
         return np.inf
     return d
@@ -138,7 +135,7 @@ def add_plane(position, normal):
 def add_cuadratic(position, color,a,b,c,d,e,f,g,h,i,j):
     return dict(type='cuadratic',position=np.array(position),a=a,b=b,c=c,d=d,e=e,
     f=f,g=g,h=h,i=i,j=j, color= np.array(color), diffuse_c= .75,specular_c=.5,reflection=.7,specular_t=1.)
-# List of objects.
+
 color_plane0 = 1. * np.ones(3)
 color_plane1 = 0. * np.ones(3)
 scene = [add_plane([0.,0.,4.],[0.,0.,1.]),
